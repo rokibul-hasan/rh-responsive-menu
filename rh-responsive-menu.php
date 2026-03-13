@@ -35,12 +35,12 @@ class RH_Responsive_Menu
 
     public function register_settings()
     {
-        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_selected');
-        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_breakpoint');
-        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_position');
-        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_top');
-        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_x_align');
-        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_x_distance');
+        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_selected', 'absint');
+        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_breakpoint', 'absint');
+        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_position', 'sanitize_text_field');
+        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_top', 'absint');
+        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_x_align', 'sanitize_text_field');
+        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_x_distance', 'absint');
     }
 
     public function settings_page_html()
@@ -141,9 +141,9 @@ class RH_Responsive_Menu
         wp_enqueue_script('rh-mobile-menu-script', plugin_dir_url(__FILE__) . 'assets/js/script.js', array('jquery'), '1.0.0', true);
 
         $breakpoint = get_option('rh_mobile_menu_breakpoint', '768');
-        $position = get_option('rh_mobile_menu_position', 'fixed');
+        $position = in_array(get_option('rh_mobile_menu_position', 'fixed'), array('fixed', 'absolute')) ? get_option('rh_mobile_menu_position', 'fixed') : 'fixed';
         $top = get_option('rh_mobile_menu_top', '20');
-        $x_align = get_option('rh_mobile_menu_x_align', 'right');
+        $x_align = in_array(get_option('rh_mobile_menu_x_align', 'right'), array('left', 'right')) ? get_option('rh_mobile_menu_x_align', 'right') : 'right';
         $x_distance = get_option('rh_mobile_menu_x_distance', '20');
 
         $other_side = ($x_align === 'left') ? 'right' : 'left';
