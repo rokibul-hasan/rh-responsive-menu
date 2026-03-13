@@ -1,0 +1,133 @@
+/* Mobile Menu Button (Hamburger) */
+#rh-mobile-menu-button {
+    position: fixed;
+    width: 35px;
+    height: 30px;
+    cursor: pointer;
+    z-index: 99998;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #333;
+    padding: 8px;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.rh-hamburger-line {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* Mobile Menu Container */
+#rh-mobile-menu-container {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 300px;
+    max-width: 80vw;
+    height: 100vh;
+    background-color: #1a1a1a;
+    z-index: 99999;
+    transition: right 0.3s cubic-bezier(0.77, 0.2, 0.05, 1.0);
+    overflow-y: auto;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+}
+
+#rh-mobile-menu-container.rh-menu-open {
+    right: 0;
+}
+
+/* Menu Header and Close Button */
+.rh-mobile-menu-header {
+    padding: 20px;
+    text-align: right;
+    border-bottom: 1px solid #333;
+}
+
+#rh-mobile-menu-close {
+    color: #fff;
+    font-size: 30px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+#rh-mobile-menu-close:hover {
+    color: #ff4c4c;
+}
+
+/* Menu Content Styles */
+.rh-mobile-menu-content {
+    padding: 20px;
+}
+
+.rh-mobile-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.rh-mobile-nav-list li {
+    margin-bottom: 0;
+    border-bottom: 1px solid #333;
+    padding: 10px 0;
+}
+
+.rh-mobile-nav-list li:last-child {
+    border-bottom: none;
+}
+
+.rh-mobile-nav-list a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+.rh-mobile-nav-list a:hover {
+    color: #0073aa;
+}
+
+/* Sub-menus */
+.rh-mobile-nav-list .sub-menu {
+    list-style: none;
+    padding-left: 15px;
+    margin-top: 10px;
+    display: none;
+}
+
+.rh-mobile-nav-list .menu-item-has-children>a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rh-mobile-nav-list .menu-item-has-children>a::after {
+    content: '▼';
+    font-size: 10px;
+    margin-left: 10px;
+}
+
+/* Overlay */
+#rh-mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 99997;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#rh-mobile-menu-overlay.rh-menu-open {
+    opacity: 1;
+    visibility: visible;
+}
