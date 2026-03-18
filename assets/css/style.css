@@ -74,7 +74,8 @@
 .rh-mobile-nav-list li {
     margin-bottom: 0;
     border-bottom: 1px solid #333;
-    padding: 10px 0;
+    padding: 0;
+    position: relative;
 }
 
 .rh-mobile-nav-list li:last-child {
@@ -86,10 +87,41 @@
     text-decoration: none;
     font-size: 16px;
     display: block;
+    padding: 10px 0;
     transition: color 0.3s ease;
 }
 
+.rh-mobile-nav-list .menu-item-has-children>a {
+    padding-right: 40px;
+}
+
 .rh-mobile-nav-list a:hover {
+    color: #0073aa;
+}
+
+/* Sub-menu Toggle Button */
+.rh-mobile-nav-list .rh-submenu-toggle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 40px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    z-index: 10;
+}
+
+.rh-mobile-nav-list .rh-submenu-toggle::after {
+    content: '▼';
+    font-size: 10px;
+    transition: transform 0.3s ease;
+}
+
+.rh-mobile-nav-list .rh-submenu-toggle.submenu-open::after {
+    transform: rotate(180deg);
     color: #0073aa;
 }
 
@@ -97,20 +129,7 @@
 .rh-mobile-nav-list .sub-menu {
     list-style: none;
     padding-left: 15px;
-    margin-top: 10px;
     display: none;
-}
-
-.rh-mobile-nav-list .menu-item-has-children>a {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.rh-mobile-nav-list .menu-item-has-children>a::after {
-    content: '▼';
-    font-size: 10px;
-    margin-left: 10px;
 }
 
 /* Overlay */

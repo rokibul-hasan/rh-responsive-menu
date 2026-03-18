@@ -28,22 +28,18 @@ jQuery(document).ready(function ($) {
         closeMenu();
     });
 
-    // Handle sub-menu toggles
-    $('.rh-mobile-nav-list .menu-item-has-children > a').on('click', function (e) {
-        var linkUrl = $(this).attr('href');
+    // Append toggle button to items with sub-menus
+    $('.rh-mobile-nav-list .menu-item-has-children > a').after('<span class="rh-submenu-toggle"></span>');
 
-        // If the link is just a placeholder (#) or if we want to force tap to open sub-menu first
-        // If we want the link to be clickable but also drop down, we maybe only prevent default if clicking the chevron
-        // For simplicity, we toggle sub-menu on link tap, but if it has a real link, we maybe navigate?
-        // Let's just toggle and prevent default for sub-menus like common mobile menus
+    // Handle sub-menu toggles via the new button
+    $('.rh-submenu-toggle').on('click', function (e) {
         e.preventDefault();
-        $(this).siblings('.sub-menu').slideToggle();
-        $(this).toggleClass('submenu-open');
-
-        if ($(this).hasClass('submenu-open')) {
-            $(this).css('color', '#0073aa');
-        } else {
-            $(this).css('color', '#fff');
-        }
+        e.stopPropagation();
+        
+        var $toggle = $(this);
+        var $subMenu = $toggle.siblings('.sub-menu');
+        
+        $subMenu.slideToggle();
+        $toggle.toggleClass('submenu-open');
     });
 });

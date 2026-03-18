@@ -10,15 +10,26 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
-class RH_Responsive_Menu
-{
+if (!class_exists('RH_Responsive_Mobile_Menu_Main_Class')) {
+    class RH_Responsive_Mobile_Menu_Main_Class
+    {
 
     public function __construct()
     {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_init', array($this, 'register_settings'));
+        add_action('admin_enqueue_scripts', array($this, 'admin_scripts'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('wp_footer', array($this, 'render_menu'));
+    }
+
+    public function admin_scripts($hook)
+    {
+        if ($hook != 'settings_page_rh-mobile-menu') {
+            return;
+        }
+        wp_enqueue_media();
+        wp_enqueue_script('rh-mobile-menu-admin', plugin_dir_url(__FILE__) . 'assets/js/admin.js', array('jquery'), '1.0.0', true);
     }
 
     public function add_admin_menu()
@@ -35,12 +46,14 @@ class RH_Responsive_Menu
 
     public function register_settings()
     {
-        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_selected', 'absint');
-        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_breakpoint', 'absint');
-        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_position', 'sanitize_text_field');
-        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_top', 'absint');
-        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_x_align', 'sanitize_text_field');
-        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_x_distance', 'absint');
+        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_selected', array('type' => 'integer', 'sanitize_callback' => 'absint', 'default' => 0));
+        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_breakpoint', array('type' => 'integer', 'sanitize_callback' => 'absint', 'default' => 768));
+        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_position', array('type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => 'fixed'));
+        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_top', array('type' => 'integer', 'sanitize_callback' => 'absint', 'default' => 20));
+        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_x_align', array('type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => 'right'));
+        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_x_distance', array('type' => 'integer', 'sanitize_callback' => 'absint', 'default' => 20));
+        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_bg_color', array('type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '#1a1a1a'));
+        register_setting('rh_mobile_menu_options_group', 'rh_mobile_menu_icon', array('type' => 'string', 'sanitize_callback' => 'esc_url_raw', 'default' => ''));
     }
 
     public function settings_page_html()
@@ -56,6 +69,8 @@ class RH_Responsive_Menu
         $top = get_option('rh_mobile_menu_top', '20');
         $x_align = get_option('rh_mobile_menu_x_align', 'right');
         $x_distance = get_option('rh_mobile_menu_x_distance', '20');
+        $bg_color = get_option('rh_mobile_menu_bg_color', '#1a1a1a');
+        $menu_icon = get_option('rh_mobile_menu_icon', '');
 
         ?>
         <div class="wrap">
@@ -128,6 +143,29 @@ class RH_Responsive_Menu
                             <p class="description">Distance from the selected side (left/right) in pixels.</p>
                         </td>
                     </tr>
+                    <tr>
+                        <th scope="row"><label for="rh_mobile_menu_bg_color">Menu Background Color</label></th>
+                        <td>
+                            <input type="color" name="rh_mobile_menu_bg_color" id="rh_mobile_menu_bg_color"
+                                value="<?php echo esc_attr($bg_color); ?>" />
+                            <p class="description">Select the background color for the mobile menu container.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="rh_mobile_menu_icon">Custom Menu Icon</label></th>
+                        <td>
+                            <input type="text" name="rh_mobile_menu_icon" id="rh_mobile_menu_icon" class="regular-text"
+                                style="margin-right: 10px;" value="<?php echo esc_url($menu_icon); ?>" />
+                            <button type="button" class="button rh-upload-icon-button">Select Image</button>
+                            <button type="button" class="button rh-remove-icon-button" style="<?php echo empty($menu_icon) ? 'display: none;' : ''; ?>">Remove</button>
+                            <div class="rh-icon-preview" style="margin-top: 10px;">
+                                <?php if (!empty($menu_icon)) : ?>
+                                    <img src="<?php echo esc_url($menu_icon); ?>" style="max-width: 50px; height: auto;" />
+                                <?php endif; ?>
+                            </div>
+                            <p class="description">Upload an image (PNG/SVG) to replace the default hamburger lines.</p>
+                        </td>
+                    </tr>
                 </table>
                 <?php submit_button(); ?>
             </form>
@@ -145,6 +183,8 @@ class RH_Responsive_Menu
         $top = get_option('rh_mobile_menu_top', '20');
         $x_align = in_array(get_option('rh_mobile_menu_x_align', 'right'), array('left', 'right')) ? get_option('rh_mobile_menu_x_align', 'right') : 'right';
         $x_distance = get_option('rh_mobile_menu_x_distance', '20');
+        $bg_color = get_option('rh_mobile_menu_bg_color', '#1a1a1a');
+        $menu_icon = get_option('rh_mobile_menu_icon', '');
 
         $other_side = ($x_align === 'left') ? 'right' : 'left';
 
@@ -154,6 +194,24 @@ class RH_Responsive_Menu
                 top: ' . intval($top) . 'px !important;
                 ' . esc_attr($x_align) . ': ' . intval($x_distance) . 'px !important;
                 ' . esc_attr($other_side) . ': auto !important;
+            }';
+
+        if (!empty($menu_icon)) {
+            $custom_css .= '
+            #rh-mobile-menu-button {
+                background: transparent !important;
+                padding: 0 !important;
+            }
+            #rh-mobile-menu-button img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }';
+        }
+
+        $custom_css .= '
+            #rh-mobile-menu-container {
+                background-color: ' . esc_attr($bg_color) . ' !important;
             }
             @media (min-width: ' . (intval($breakpoint) + 1) . 'px) {
                 #rh-mobile-menu-button { display: none !important; }
@@ -166,6 +224,7 @@ class RH_Responsive_Menu
     public function render_menu()
     {
         $selected_menu = get_option('rh_mobile_menu_selected', '');
+        $menu_icon = get_option('rh_mobile_menu_icon', '');
 
         if (empty($selected_menu)) {
             return;
@@ -173,9 +232,13 @@ class RH_Responsive_Menu
 
         ?>
         <div id="rh-mobile-menu-button">
-            <span class="rh-hamburger-line"></span>
-            <span class="rh-hamburger-line"></span>
-            <span class="rh-hamburger-line"></span>
+            <?php if (!empty($menu_icon)) : ?>
+                <img src="<?php echo esc_url($menu_icon); ?>" alt="Menu" />
+            <?php else : ?>
+                <span class="rh-hamburger-line"></span>
+                <span class="rh-hamburger-line"></span>
+                <span class="rh-hamburger-line"></span>
+            <?php endif; ?>
         </div>
 
         <div id="rh-mobile-menu-overlay"></div>
@@ -197,6 +260,10 @@ class RH_Responsive_Menu
         </div>
         <?php
     }
+    }
 }
 
-new RH_Responsive_Menu();
+function rh_mobile_menu_init() {
+    new RH_Responsive_Mobile_Menu_Main_Class();
+}
+add_action('plugins_loaded', 'rh_mobile_menu_init');
